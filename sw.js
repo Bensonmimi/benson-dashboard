@@ -1,4 +1,4 @@
-const CACHE_NAME = 'benson-pro-v1';
+const CACHE_NAME = 'benson-pro-v2';
 const urlsToCache = [
   './dashboard.html',
   './icon-192.png',
@@ -34,15 +34,19 @@ self.addEventListener('fetch', event => {
     return;
   }
 
+  // Network First Strategy: Always try to get the newest file from the internet
+  // This prevents the PWA from getting stuck on an old version of dashboard.html
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Cache hit - return response
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
-      })
+    fetch(event.request).then(response => {
+      // If successful, save a copy in the cache for offline fallback
+      return caches.open(CACHE_NAME).then(cache => {
+        cache.put(event.request, response.clone());
+        return response;
+      });
+    }).catch(() => {
+      // If offline, fallback to the cached version
+      return caches.match(event.request);
+    })
   );
 });
 

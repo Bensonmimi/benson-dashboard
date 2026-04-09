@@ -240,22 +240,22 @@
         <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
             
             <!-- 左 + 中：全域資產配置 -->
-            <div class="glass-card p-6 flex flex-col xl:col-span-2 h-[600px] lg:h-[650px]">
-                <div class="flex justify-between items-start mb-2 relative z-10">
+            <div class="glass-card flex flex-col xl:col-span-2 h-[600px] lg:h-[650px] order-last xl:order-first">
+                <div class="p-6 flex justify-between items-start mb-2 relative z-10 pb-0">
                     <div>
                         <h3 class="text-xl font-bold text-slate-200 flex items-center gap-2">
                             <i class="ph-fill ph-pie-chart text-brand/80"></i> 全域資產配置
                         </h3>
                     </div>
                 </div>
-                <div id="allocChart" class="flex-1 w-full -mt-4 relative z-0"></div>
+                <div id="allocChart" class="flex-1 w-full relative z-0"></div>
             </div>
             
             <!-- 右側：分割區塊 -->
             <div class="flex flex-col gap-6 xl:col-span-1 border-none shadow-none bg-transparent">
                 
                 <!-- 新增：3欄位並排 -->
-                <div class="grid grid-cols-3 gap-4 h-[140px] shrink-0">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 h-auto shrink-0">
                     <div class="glass-card p-4 flex flex-col justify-center bg-glow-up relative overflow-hidden group">
                         <i class="ph-fill ph-money absolute -bottom-4 -right-4 text-7xl text-up/10 transition-transform group-hover:scale-110"></i>
                         <h4 class="text-sm font-bold text-slate-400 tracking-wider mb-2">薪資總收入</h4>
@@ -307,8 +307,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="flex-1 overflow-auto p-4 custom-scrollbar">
-                    <table class="w-full text-base text-left border-separate border-spacing-y-2">
+                <div class="flex-1 overflow-x-auto p-4 custom-scrollbar whitespace-nowrap">
+                    <table class="w-full min-w-[600px] text-base text-left border-separate border-spacing-y-2">
                         <thead class="text-xs text-muted uppercase sticky top-0 bg-base/90 backdrop-blur-md z-10">
                             <tr>
                                 <th class="px-5 py-3 font-semibold rounded-l-lg border-b border-white/5">投資項目</th>
@@ -391,28 +391,6 @@
                     </div>
                     <i id="acc-flows-icon" class="ph-bold ph-caret-down text-xl text-muted accordion-icon"></i>
                 </button>
-                <div id="acc-flows" class="accordion-content border-t border-white/5 bg-black/20 backdrop-blur-md">
-                    <div class="p-6">
-                        <div id="flows-container" class="relative border-l border-white/10 ml-4 space-y-6">
-                            
-                            <div class="relative pl-6">
-                                <div class="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-up shadow-[0_0_10px_rgba(0,232,143,0.6)]"></div>
-                                <div class="flex flex-col sm:flex-row sm:items-center justify-between">
-                                    <div>
-                                        <span class="text-xs text-slate-400 font-mono tracking-wider bg-white/5 px-2 py-0.5 rounded">115.01.05</span>
-                                        <h4 class="text-slate-200 text-base font-bold mt-2">投資出金 <span class="text-white/20 font-normal mx-1">|</span> 韋仔代操</h4>
-                                    </div>
-                                    <div class="mt-2 sm:mt-0 text-emerald-400 font-bold text-sm bg-emerald-400/10 px-3 py-1.5 rounded-lg border border-emerald-500/20">+ 158,888 TWD</div>
-                                </div>
-                            </div>
-                            
-                            <div class="relative pl-6">
-                                <div class="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-up shadow-[0_0_10px_rgba(0,232,143,0.6)]"></div>
-                                <div class="flex flex-col sm:flex-row sm:items-center justify-between">
-                                    <div>
-                                        <span class="text-xs text-slate-400 font-mono tracking-wider bg-white/5 px-2 py-0.5 rounded">114.10.07</span>
-                                        <h4 class="text-slate-200 text-base font-bold mt-2">投資出金 <span class="text-white/20 font-normal mx-1">|</span> 韋仔代操</h4>
-                                    </div>
                                     <div class="mt-2 sm:mt-0 text-emerald-400 font-bold text-sm bg-emerald-400/10 px-3 py-1.5 rounded-lg border border-emerald-500/20">+ 100,000 TWD</div>
                                 </div>
                             </div>
@@ -514,7 +492,7 @@
     </div>
 
     <script>
-        const fmt = (num) => new Intl.NumberFormat('en-US').format(num);
+        const fmt = (num) => new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(num);
         function toggleAccordion(id) {
             document.getElementById(id).classList.toggle('open');
             document.getElementById(id + '-icon').classList.toggle('open');
@@ -546,10 +524,10 @@
             series: [
                 {
                     type: 'pie',
-                    radius: ['0%', '38%'],
+                    radius: ['0%', '30%'],
                     center: ['50%', '50%'],
-                    itemStyle: { borderColor: '#0B0F19', borderWidth: 4 },
-                    label: { position: 'inner', fontSize: 13, color: '#fff', formatter: '{b}', fontWeight: 'bold', fontFamily: 'Outfit, Noto Sans TC' },
+                    itemStyle: { borderColor: '#0B0F19', borderWidth: 2 },
+                    label: { position: 'inner', fontSize: 11, color: '#fff', formatter: '{b}', fontWeight: 'bold', fontFamily: 'Outfit, Noto Sans TC' },
                     emphasis: { scale: true, scaleSize: 4, itemStyle: { shadowBlur: 20, shadowColor: 'rgba(0,0,0,0.5)' } },
                     data: [
                         { value: 3115008, name: '流動資金', itemStyle: { color: '#0284c7' } }, 
@@ -558,12 +536,12 @@
                 },
                 {
                     type: 'pie',
-                    radius: ['48%', '75%'],
+                    radius: ['45%', '70%'],
                     center: ['50%', '50%'],
-                    itemStyle: { borderColor: '#0B0F19', borderWidth: 3, borderRadius: 4 },
-                    label: { color: '#E2E8F0', fontSize: 13, formatter: '{b}  {d}%', fontFamily: 'Outfit, Noto Sans TC', fontWeight: 500 },
-                    labelLine: { lineStyle: { color: 'rgba(255,255,255,0.3)' }, smooth: 0.2, length: 15, length2: 25 },
-                    emphasis: { scale: true, scaleSize: 6, itemStyle: { shadowBlur: 20, shadowColor: 'rgba(255, 255, 255, 0.2)' } },
+                    itemStyle: { borderColor: '#0B0F19', borderWidth: 2, borderRadius: 4 },
+                    label: { color: '#E2E8F0', fontSize: 11, formatter: '{b} {d}%', fontFamily: 'Outfit, Noto Sans TC', fontWeight: 500, overflow: 'break' },
+                    labelLine: { lineStyle: { color: 'rgba(255,255,255,0.3)' }, smooth: 0.2, length: 10, length2: 15 },
+                    emphasis: { scale: true, scaleSize: 5, itemStyle: { shadowBlur: 20, shadowColor: 'rgba(255, 255, 255, 0.2)' } },
                     data: [
                         { value: 573216, name: '公教定存', itemStyle: { color: '#38bdf8' } },
                         { value: 1051503, name: '富邦活存', itemStyle: { color: '#0ea5e9' } },
@@ -718,6 +696,8 @@
                     const allocData = [];
                     const cryptoData = [];
                     const deepList = [];
+                    let pnlList = [];
+                    let flowList = [];
 
                     apiData.rows.forEach(r => {
                         if (r && r.c && r.c[0] && r.c[0].v != null && r.c[1] != null) {
@@ -737,6 +717,11 @@
                                 if (invested !== 0 || current !== 0) {
                                     deepList.push({ name: key.replace('深度_', ''), invested, current, pnl });
                                 }
+                            } else if (key.startsWith('期權_')) {
+                                const month = key.replace('期權_', '');
+                                const monthly = Number(val);
+                                const cum = r.c[2] ? Number(r.c[2].v) : 0;
+                                pnlList.push({ month, monthly, cum });
                             } else {
                                 dict[key] = val; // Regular KPIs
                             }
@@ -810,24 +795,16 @@
                         });
                         document.getElementById('deep-analysis-body').innerHTML = html;
                     }
-                }
 
-                // 2. Fetch PnL History (For Options Chart)
-                // The sheet format expected: Col 0 (Month), Col 2 (Monthly PnL), Col 4/5 (Cumulative PnL)
-                const pnlData = await fetchSheetData('3.投資損益明');
-                if (pnlData && pnlData.rows) {
-                    const months = [];
-                    const monthlyPnl = [];
-                    const cumPnl = [];
-                    pnlData.rows.slice(-10).forEach(r => {
-                        if (r && r.c && r.c[0]) {
-                            months.push(r.c[0].f || r.c[0].v);
-                            monthlyPnl.push(r.c[2] ? r.c[2].v : 0);
-                            cumPnl.push(r.c[5] ? r.c[5].v : 0);
-                        }
-                    });
-                    
-                    if (months.length > 0) {
+                    // Update PnL History (For Options Chart)
+                    if (pnlList.length > 0) {
+                        // Filter out unused months (monthly PnL is 0) to avoid long flat charts
+                        pnlList = pnlList.filter(item => item.monthly !== 0);
+                        
+                        const months = pnlList.map(i => i.month);
+                        const monthlyPnl = pnlList.map(i => i.monthly);
+                        const cumPnl = pnlList.map(i => i.cum);
+                        
                         pnlChart.setOption({
                             xAxis: { data: months },
                             series: [
@@ -837,48 +814,6 @@
                         });
                     }
                 }
-
-                // 3. Fetch Recent Flows (For Accordion list)
-                const flowsData = await fetchSheetData('1.總資產數據');
-                if (flowsData && flowsData.rows) {
-                    let html = '';
-                    // Get last 5 valid rows
-                    const validRows = flowsData.rows.filter(r => r && r.c && r.c[0]);
-                    const lastRows = validRows.slice(-5).reverse();
-                    
-                    lastRows.forEach((r, idx) => {
-                        const date = r.c[0].v;
-                        const action = r.c[1] ? r.c[1].v : '異動';
-                        const account = r.c[2] ? r.c[2].v : '';
-                        const amount = r.c[4] ? r.c[4].v : 0;
-                        const sign = amount >= 0 ? '+' : '-';
-                        
-                        // Alternate colors based on index
-                        const colors = [
-                            { bg: 'bg-up', shadow: 'rgba(0,232,143,0.6)', text: 'text-emerald-400', badge: 'bg-emerald-400/10 border-emerald-500/20' },
-                            { bg: 'bg-brand', shadow: 'rgba(0,240,255,0.6)', text: 'text-cyan-400', badge: 'bg-cyan-400/10 border-cyan-500/20' },
-                            { bg: 'bg-purple-500', shadow: 'rgba(168,85,247,0.6)', text: 'text-purple-400', badge: 'bg-purple-500/10 border-purple-500/20' },
-                        ];
-                        const c = colors[idx % colors.length];
-
-                        html += `
-                        <div class="relative pl-6">
-                            <div class="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full ${c.bg} shadow-[0_0_10px_${c.shadow}]"></div>
-                            <div class="flex flex-col sm:flex-row sm:items-center justify-between">
-                                <div>
-                                    <span class="text-xs text-slate-400 font-mono tracking-wider bg-white/5 px-2 py-0.5 rounded">${date}</span>
-                                    <h4 class="text-slate-200 text-base font-bold mt-2">${action} <span class="text-white/20 font-normal mx-1">|</span> ${account}</h4>
-                                </div>
-                                <div class="mt-2 sm:mt-0 ${c.text} font-bold text-sm ${c.badge} px-3 py-1.5 rounded-lg border">${sign} ${fmt(Math.abs(amount))} TWD</div>
-                            </div>
-                        </div>`;
-                    });
-                    
-                    if (html !== '') {
-                        document.getElementById('flows-container').innerHTML = html;
-                    }
-                }
-
             } catch(e) {
                 console.error("Dashboard synchronization failed: ", e);
             } finally {

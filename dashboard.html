@@ -237,10 +237,32 @@
         </div>
 
         <!-- 第二排：全域資產配置 + 右側小卡(變3卡) + 加密分布 -->
-        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 xl:grid-rows-[auto_1fr]">
             
-            <!-- 左 + 中：全域資產配置 -->
-            <div class="glass-card flex flex-col xl:col-span-2 h-[600px] lg:h-[650px] order-last xl:order-first">
+            <!-- 1. 小數據卡片：手機排第一，電腦排右上方 (橫向三卡) -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 xl:col-start-3 xl:row-start-1 order-1">
+                <div class="glass-card p-4 flex flex-col justify-center bg-glow-up relative overflow-hidden group">
+                    <i class="ph-fill ph-money absolute -bottom-4 -right-4 text-7xl text-up/10 transition-transform group-hover:scale-110"></i>
+                    <h4 class="text-sm font-bold text-slate-400 tracking-wider mb-2">薪資總收入</h4>
+                    <h3 id="val-salary" class="text-lg lg:text-xl font-bold text-slate-100 tracking-tight z-10">12,714,831</h3>
+                </div>
+
+                <div class="glass-card p-4 flex flex-col justify-center bg-glow-warn relative overflow-hidden group">
+                    <i class="ph-fill ph-clock absolute -bottom-4 -right-4 text-7xl text-yellow-500/10 transition-transform group-hover:scale-110"></i>
+                    <!-- 將 歷史總花費 顯示名稱改為 推估歷史總花費 -->
+                    <h4 class="text-sm font-bold text-slate-400 tracking-wider mb-2">推估歷史總花費</h4>
+                    <h3 id="val-expense" class="text-lg lg:text-xl font-bold text-slate-100 tracking-tight z-10">2,639,669</h3>
+                </div>
+
+                <div class="glass-card p-4 flex flex-col justify-center bg-glow-brand relative overflow-hidden group">
+                    <i class="ph-fill ph-coins absolute -bottom-4 -right-4 text-7xl text-white/5 transition-transform group-hover:scale-110"></i>
+                    <h4 class="text-sm font-bold text-slate-400 tracking-wider mb-2">推估月均開銷</h4>
+                    <h3 id="val-monthly" class="text-lg lg:text-xl font-bold text-slate-100 tracking-tight z-10">21,461</h3>
+                </div>
+            </div>
+
+            <!-- 2. 全域資產配置：手機排第二，電腦排左側跨兩欄 -->
+            <div class="glass-card flex flex-col xl:col-start-1 xl:col-span-2 xl:row-start-1 xl:row-span-2 h-[600px] lg:h-[650px] order-2 z-10">
                 <div class="p-6 flex justify-between items-start mb-2 relative z-10 pb-0">
                     <div>
                         <h3 class="text-xl font-bold text-slate-200 flex items-center gap-2">
@@ -250,44 +272,18 @@
                 </div>
                 <div id="allocChart" class="flex-1 w-full relative z-0"></div>
             </div>
-            
-            <!-- 右側：分割區塊 -->
-            <div class="flex flex-col gap-6 xl:col-span-1 border-none shadow-none bg-transparent">
-                
-                <!-- 新增：3欄位並排 -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 h-auto shrink-0">
-                    <div class="glass-card p-4 flex flex-col justify-center bg-glow-up relative overflow-hidden group">
-                        <i class="ph-fill ph-money absolute -bottom-4 -right-4 text-7xl text-up/10 transition-transform group-hover:scale-110"></i>
-                        <h4 class="text-sm font-bold text-slate-400 tracking-wider mb-2">薪資總收入</h4>
-                        <h3 id="val-salary" class="text-lg lg:text-xl font-bold text-slate-100 tracking-tight z-10">12,714,831</h3>
-                    </div>
 
-                    <div class="glass-card p-4 flex flex-col justify-center bg-glow-warn relative overflow-hidden group">
-                        <i class="ph-fill ph-clock absolute -bottom-4 -right-4 text-7xl text-yellow-500/10 transition-transform group-hover:scale-110"></i>
-                        <h4 class="text-sm font-bold text-slate-400 tracking-wider mb-2">歷史總花費</h4>
-                        <h3 id="val-expense" class="text-lg lg:text-xl font-bold text-slate-100 tracking-tight z-10">2,639,669</h3>
-                    </div>
-
-                    <div class="glass-card p-4 flex flex-col justify-center bg-glow-brand relative overflow-hidden group">
-                        <i class="ph-fill ph-coins absolute -bottom-4 -right-4 text-7xl text-white/5 transition-transform group-hover:scale-110"></i>
-                        <h4 class="text-sm font-bold text-slate-400 tracking-wider mb-2">推估月均開銷</h4>
-                        <h3 id="val-monthly" class="text-lg lg:text-xl font-bold text-slate-100 tracking-tight z-10">21,461</h3>
+            <!-- 3. 加密資產分布：手機排第三，電腦排右下方 -->
+            <div class="glass-card p-6 flex flex-col xl:col-start-3 xl:row-start-2 min-h-[350px] order-3">
+                <div class="flex justify-between items-start mb-2 relative z-10">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-200 flex items-center gap-2">
+                            <i class="ph-fill ph-currency-btc text-yellow-500/80"></i> 加密資產分布
+                        </h3>
+                        <p id="val-crypto-total" class="text-sm text-yellow-500/70 font-medium mt-1">總額 84,793 U</p>
                     </div>
                 </div>
-
-                <!-- 加密資產分布 -->
-                <div class="glass-card p-6 flex flex-col flex-1 min-h-[300px]">
-                    <div class="flex justify-between items-start mb-2 relative z-10">
-                        <div>
-                            <h3 class="text-lg font-bold text-slate-200 flex items-center gap-2">
-                                <i class="ph-fill ph-currency-btc text-yellow-500/80"></i> 加密資產分布
-                            </h3>
-                            <p id="val-crypto-total" class="text-sm text-yellow-500/70 font-medium mt-1">總額 84,793 U</p>
-                        </div>
-                    </div>
-                    <div id="cryptoChart" class="flex-1 w-full -mt-2"></div>
-                </div>
-
+                <div id="cryptoChart" class="flex-1 w-full -mt-2"></div>
             </div>
         </div>
 
@@ -374,42 +370,8 @@
 
         </div>
 
-        <!-- 第四排：折疊式區塊 (近期資金異動 + 流動資金帳戶) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-            <!-- Accordion 1: 近期資金異動 -->
-            <div class="glass-card h-fit">
-                <button class="w-full p-6 flex justify-between items-center text-left hover:bg-white/[0.02] transition" onclick="toggleAccordion('acc-flows')">
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center border border-purple-500/20">
-                            <i class="ph-fill ph-arrows-left-right text-purple-400 text-xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-base font-bold text-slate-200">近期重要資金調度</h3>
-                            <p class="text-xs text-slate-400 mt-1">代操分潤與跨領域流動紀錄</p>
-                        </div>
-                    </div>
-                    <i id="acc-flows-icon" class="ph-bold ph-caret-down text-xl text-muted accordion-icon"></i>
-                </button>
-                                    <div class="mt-2 sm:mt-0 text-emerald-400 font-bold text-sm bg-emerald-400/10 px-3 py-1.5 rounded-lg border border-emerald-500/20">+ 100,000 TWD</div>
-                                </div>
-                            </div>
-
-                            <div class="relative pl-6">
-                                <div class="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-brand shadow-[0_0_10px_rgba(0,240,255,0.6)]"></div>
-                                <div class="flex flex-col sm:flex-row sm:items-center justify-between">
-                                    <div>
-                                        <span class="text-xs text-slate-400 font-mono tracking-wider bg-white/5 px-2 py-0.5 rounded">114.07.15</span>
-                                        <h4 class="text-slate-200 text-base font-bold mt-2">證券抽資 <span class="text-white/20 font-normal mx-1">|</span> 富邦證券</h4>
-                                    </div>
-                                    <div class="mt-2 sm:mt-0 text-cyan-400 font-bold text-sm bg-cyan-400/10 px-3 py-1.5 rounded-lg border border-cyan-500/20">+ 115,990 TWD</div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- 第四排：折疊式區塊 -->
+        <div class="grid grid-cols-1 gap-6">
 
             <!-- Accordion 2: 流動資金帳戶 -->
             <div class="glass-card h-fit">

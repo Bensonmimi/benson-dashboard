@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benson資產配置儀表板 | 專業資產終端</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- PWA Settings -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="./icon-192.png">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Outfit"', '"Noto Sans TC"', 'sans-serif'] },
+                    colors: {
+                        base: '#0B0F19',
+                        surface: 'rgba(20, 27, 45, 0.65)',
+                        surfaceHover: 'rgba(30, 41, 67, 0.8)',
+                        border: 'rgba(255, 255, 255, 0.08)',
+                        borderHover: 'rgba(255, 255, 255, 0.15)',
+                        brand: '#00F0FF',
+                        accent: '#7000FF',
+                        up: '#00E88F',
+                        down: '#FF3366',
+                        muted: '#8A99B5',
+                        textMain: '#E2E8F0', /* 降低白色亮度避免刺眼 */
+                        textTitle: '#CBD5E1'
+                    },
+                    backgroundImage: {
+                        'glow-brand': 'radial-gradient(circle at center, rgba(0, 240, 255, 0.1) 0%, transparent 60%)',
+                        'glow-accent': 'radial-gradient(circle at center, rgba(112, 0, 255, 0.1) 0%, transparent 60%)',
+                        'glow-up': 'radial-gradient(circle at center, rgba(0, 232, 143, 0.1) 0%, transparent 60%)',
+                        'glow-down': 'radial-gradient(circle at center, rgba(255, 51, 102, 0.1) 0%, transparent 60%)',
+                        'glow-warn': 'radial-gradient(circle at center, rgba(255, 170, 0, 0.1) 0%, transparent 60%)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { 
+            background-color: #05070D; 
+            color: #E2E8F0; /* 整體文字不那麼亮白 */
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(112, 0, 255, 0.04), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(0, 240, 255, 0.03), transparent 25%);
+            background-attachment: fixed;
+        }
+        
+        .glass-card {
+            background: var(--surface, rgba(20, 27, 45, 0.65));
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .glass-card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 1.5rem;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 100%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .text-gradient {
+            /* 調整亮度與藍紫色向，不過於刺眼 */
+            background: linear-gradient(135deg, #E2E8F0 0%, #94A3B8 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .table-row-hover {
+            transition: background-color 0.2s ease;
+        }
+        .table-row-hover:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.5s ease, opacity 0.4s ease; opacity: 0; }
+        .accordion-content.open { max-height: 1000px; opacity: 1; }
+        .accordion-icon { transition: transform 0.4s ease; }
+        .accordion-icon.open { transform: rotate(180deg); }
+
+        /* Loading Overlay */
+        #loading-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(5, 7, 13, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease;
+        }
+        #loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(0, 240, 255, 0.1);
+            border-left-color: #00F0FF;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="antialiased p-4 md:p-6 lg:p-8 selection:bg-brand selection:text-base">
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay">
+        <div class="spinner mb-4"></div>
+        <h2 class="text-xl font-bold text-slate-200 tracking-wider animate-pulse">Syncing Data...</h2>
+        <p class="text-sm text-brand/80 mt-2 font-medium">從 Google 終端讀取最新數據</p>
+    </div>
+
+    <div class="max-w-[1700px] mx-auto space-y-6">
+        
+        <!-- Header -->
+        <header class="flex flex-col lg:flex-row justify-between items-start lg:items-end border-b border-white/5 pb-6 mb-8 gap-6">
+            <div class="relative">
+                <div class="absolute -top-10 -left-10 w-40 h-40 bg-brand/10 blur-[80px] rounded-full pointer-events-none"></div>
+                <h1 class="text-3xl lg:text-4xl font-bold text-slate-200 flex items-center gap-3 tracking-tight">
+                    <i class="ph-fill ph-planet text-brand animate-pulse"></i> 
+                    Benson資產配置 <span class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand to-accent opacity-80">Pro</span>
+                </h1>
+                <div class="mt-4">
+                    <h4 class="text-base md:text-lg font-bold text-slate-400 tracking-wider uppercase mb-1">當前真實淨值 (Net Worth)</h4>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-2xl text-slate-400 font-light">NT$</span>
+                        <h2 id="val-networth" class="text-5xl lg:text-7xl font-black text-gradient tracking-tighter drop-shadow-[0_4px_16px_rgba(0,0,0,0.5)]">7,610,881</h2>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <div class="glass-card px-4 py-2 flex items-center gap-3 rounded-full border-white/10 !shadow-none bg-white/5">
+                    <span class="relative flex h-3 w-3">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-60"></span>
+                      <span class="relative inline-flex rounded-full h-3 w-3 bg-brand/80"></span>
+                    </span>
+                    <span id="val-date" class="text-sm font-medium text-slate-400">基準日：115.04.02</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- 第一排：4個 KPI 數據卡 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
+            
+            <div class="glass-card p-6 bg-glow-brand flex flex-col justify-between group">
+                <div class="flex justify-between items-start mb-6">
+                    <h4 class="text-base md:text-lg font-bold text-slate-400 tracking-wider">總資產</h4>
+                    <div class="w-10 h-10 rounded-xl bg-brand/10 flex items-center justify-center border border-brand/20 group-hover:bg-brand/20 transition-colors">
+                        <i class="ph-fill ph-wallet text-xl text-brand/80"></i>
+                    </div>
+                </div>
+                <div>
+                    <h3 id="val-total-asset" class="text-3xl lg:text-4xl font-bold text-slate-100 tracking-tight">8,301,259</h3>
+                    <p id="val-asset-split" class="text-sm text-brand/80 mt-2 font-medium">流動 3.11M <span class="text-white/20 mx-1">|</span> 投資 5.18M</p>
+                </div>
+            </div>
+            
+            <div class="glass-card p-6 bg-glow-warn flex flex-col justify-between group">
+                <div class="flex justify-between items-start mb-6">
+                    <h4 class="text-base md:text-lg font-bold text-slate-400 tracking-wider">負債總額</h4>
+                    <div class="w-10 h-10 rounded-xl bg-yellow-500/10 flex items-center justify-center border border-yellow-500/20 group-hover:bg-yellow-500/20 transition-colors">
+                        <i class="ph-fill ph-scales text-xl text-yellow-500/80"></i>
+                    </div>
+                </div>
+                <div>
+                    <h3 id="val-total-liab" class="text-3xl lg:text-4xl font-bold text-yellow-400 tracking-tight">- 690,378</h3>
+                    <p class="text-sm text-yellow-500/70 mt-2 font-medium">個人借貸(爸爸)與保單借款</p>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 bg-glow-down flex flex-col justify-between group">
+                <div class="flex justify-between items-start mb-6">
+                    <h4 class="text-base md:text-lg font-bold text-slate-400 tracking-wider">已知投資損益</h4>
+                    <div class="w-10 h-10 rounded-xl bg-down/10 flex items-center justify-center border border-down/20 group-hover:bg-down/20 transition-colors">
+                        <i class="ph-fill ph-trend-down text-xl text-down/80"></i>
+                    </div>
+                </div>
+                <div>
+                    <h3 id="val-pnl" class="text-3xl lg:text-4xl font-bold text-rose-400 tracking-tight">- 2,051,104</h3>
+                    <p class="text-sm text-down/70 mt-2 font-medium">歷史期貨與加密幣圈綜合耗損</p>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 bg-glow-warn flex flex-col justify-between group">
+                <div class="flex justify-between items-start mb-6">
+                    <h4 class="text-base md:text-lg font-bold text-slate-400 tracking-wider">已知沉沒成本</h4>
+                    <div class="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center border border-orange-500/20 group-hover:bg-orange-500/20 transition-colors">
+                        <i class="ph-fill ph-fire text-xl text-orange-500/80"></i>
+                    </div>
+                </div>
+                <div>
+                    <h3 id="val-sunk" class="text-3xl lg:text-4xl font-bold text-orange-400 tracking-tight">- 413,177</h3>
+                    <p class="text-sm text-orange-500/70 mt-2 font-medium">各種無法回收之一次性消耗</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 第二排：全域資產配置 + 右側小卡(變3卡) + 加密分布 -->
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            
+            <!-- 左 + 中：全域資產配置 -->
+            <div class="glass-card p-6 flex flex-col xl:col-span-2 h-[600px] lg:h-[650px]">
+                <div class="flex justify-between items-start mb-2 relative z-10">
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-200 flex items-center gap-2">
+                            <i class="ph-fill ph-pie-chart text-brand/80"></i> 全域資產配置
+                        </h3>
+                    </div>
+                </div>
+                <div id="allocChart" class="flex-1 w-full -mt-4 relative z-0"></div>
+            </div>
+            
+            <!-- 右側：分割區塊 -->
+            <div class="flex flex-col gap-6 xl:col-span-1 border-none shadow-none bg-transparent">
+                
+                <!-- 新增：3欄位並排 -->
+                <div class="grid grid-cols-3 gap-4 h-[140px] shrink-0">
+                    <div class="glass-card p-4 flex flex-col justify-center bg-glow-up relative overflow-hidden group">
+                        <i class="ph-fill ph-money absolute -bottom-4 -right-4 text-7xl text-up/10 transition-transform group-hover:scale-110"></i>
+                        <h4 class="text-sm font-bold text-slate-400 tracking-wider mb-2">薪資總收入</h4>
+                        <h3 id="val-salary" class="text-lg lg:text-xl font-bold text-slate-100 tracking-tight z-10">12,714,831</h3>
+                    </div>
+
+                    <div class="glass-card p-4 flex flex-col justify-center bg-glow-warn relative overflow-hidden group">
+                        <i class="ph-fill ph-clock absolute -bottom-4 -right-4 text-7xl text-yellow-500/10 transition-transform group-hover:scale-110"></i>
+                        <h4 class="text-sm font-bold text-slate-400 tracking-wider mb-2">歷史總花費</h4>
+                        <h3 id="val-expense" class="text-lg lg:text-xl font-bold text-slate-100 tracking-tight z-10">2,639,669</h3>
+                    </div>
+
+                    <div class="glass-card p-4 flex flex-col justify-center bg-glow-brand relative overflow-hidden group">
+                        <i class="ph-fill ph-coins absolute -bottom-4 -right-4 text-7xl text-white/5 transition-transform group-hover:scale-110"></i>
+                        <h4 class="text-sm font-bold text-slate-400 tracking-wider mb-2">推估月均開銷</h4>
+                        <h3 id="val-monthly" class="text-lg lg:text-xl font-bold text-slate-100 tracking-tight z-10">21,461</h3>
+                    </div>
+                </div>
+
+                <!-- 加密資產分布 -->
+                <div class="glass-card p-6 flex flex-col flex-1 min-h-[300px]">
+                    <div class="flex justify-between items-start mb-2 relative z-10">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-200 flex items-center gap-2">
+                                <i class="ph-fill ph-currency-btc text-yellow-500/80"></i> 加密資產分布
+                            </h3>
+                            <p id="val-crypto-total" class="text-sm text-yellow-500/70 font-medium mt-1">總額 84,793 U</p>
+                        </div>
+                    </div>
+                    <div id="cryptoChart" class="flex-1 w-full -mt-2"></div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 第三排：深度分析 & 期權分析 -->
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            
+            <!-- 左 + 中：深度損益分析 -->
+            <div class="glass-card p-0 flex flex-col xl:col-span-2 overflow-hidden h-[450px]">
+                <div class="p-6 border-b border-white/5 bg-white/[0.01]">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center border border-accent/20">
+                            <i class="ph-fill ph-target text-accent text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-200">投資損益深度分析</h3>
+                            <p class="text-sm text-slate-400">各項資產之投入金額、目前金額與真實損益</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-1 overflow-auto p-4 custom-scrollbar">
+                    <table class="w-full text-base text-left border-separate border-spacing-y-2">
+                        <thead class="text-xs text-muted uppercase sticky top-0 bg-base/90 backdrop-blur-md z-10">
+                            <tr>
+                                <th class="px-5 py-3 font-semibold rounded-l-lg border-b border-white/5">投資項目</th>
+                                <th class="px-5 py-3 font-semibold border-b border-white/5">投入金額</th>
+                                <th class="px-5 py-3 font-semibold border-b border-white/5">目前金額</th>
+                                <th class="px-5 py-3 font-semibold border-b border-white/5">損益概算</th>
+                                <th class="px-5 py-3 font-semibold rounded-r-lg border-b border-white/5">狀態判定</th>
+                            </tr>
+                        </thead>
+                        <tbody id="deep-analysis-body">
+                            <tr class="table-row-hover bg-white/[0.02]">
+                                <td class="px-5 py-4 text-slate-200 font-medium rounded-l-lg">期貨 富邦期貨戶</td>
+                                <td class="px-5 py-4 text-muted font-mono text-sm">3,830,000</td>
+                                <td class="px-5 py-4 text-slate-200 font-mono text-sm">1,515,271</td>
+                                <td class="px-5 py-4 text-rose-400 font-bold font-mono text-sm">- 2,314,729</td>
+                                <td class="px-5 py-4 rounded-r-lg"><span class="px-3 py-1.5 text-xs rounded-full border border-rose-500/30 bg-rose-500/10 text-rose-400 font-bold">🔴 虧損中</span></td>
+                            </tr>
+                            <tr class="table-row-hover bg-white/[0.02]">
+                                <td class="px-5 py-4 text-slate-200 font-medium rounded-l-lg">證券 富邦證券戶</td>
+                                <td class="px-5 py-4 text-muted font-mono text-sm">15,249</td>
+                                <td class="px-5 py-4 text-slate-200 font-mono text-sm">0</td>
+                                <td class="px-5 py-4 text-rose-400 font-bold font-mono text-sm">- 15,249</td>
+                                <td class="px-5 py-4 rounded-r-lg"><span class="px-3 py-1.5 text-xs rounded-full border border-rose-500/30 bg-rose-500/10 text-rose-400 font-bold">🔴 已出清虧損</span></td>
+                            </tr>
+                            <tr class="table-row-hover bg-white/[0.02]">
+                                <td class="px-5 py-4 text-slate-200 font-medium rounded-l-lg">代操 韋仔代操</td>
+                                <td class="px-5 py-4 text-muted font-mono text-sm">41,110</td>
+                                <td class="px-5 py-4 text-slate-200 font-mono text-sm">500,000</td>
+                                <td class="px-5 py-4 text-emerald-400 font-bold font-mono text-sm">+ 458,890</td>
+                                <td class="px-5 py-4 rounded-r-lg"><span class="px-3 py-1.5 text-xs rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 font-bold">🟢 獲利中</span></td>
+                            </tr>
+                            <tr class="table-row-hover bg-white/[0.02]">
+                                <td class="px-5 py-4 text-slate-200 font-medium rounded-l-lg">代操 培儒代操</td>
+                                <td class="px-5 py-4 text-muted font-mono text-sm">266,500</td>
+                                <td class="px-5 py-4 text-slate-200 font-mono text-sm">500,000</td>
+                                <td class="px-5 py-4 text-emerald-400 font-bold font-mono text-sm">+ 233,500</td>
+                                <td class="px-5 py-4 rounded-r-lg"><span class="px-3 py-1.5 text-xs rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 font-bold">🟢 獲利中</span></td>
+                            </tr>
+                            <tr class="table-row-hover bg-white/[0.02]">
+                                <td class="px-5 py-4 text-slate-200 font-medium rounded-l-lg">加密貨幣總部位 (USD)</td>
+                                <td class="px-5 py-4 text-muted font-mono text-sm">84,620</td>
+                                <td class="px-5 py-4 text-slate-200 font-mono text-sm">84,793</td>
+                                <td class="px-5 py-4 text-brand font-bold font-mono text-sm">+ 173</td>
+                                <td class="px-5 py-4 rounded-r-lg"><span class="px-3 py-1.5 text-xs rounded-full border border-brand/30 bg-brand/10 text-brand font-bold">🟢 獲利中</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 右側：期權月損益趨勢 -->
+            <div class="glass-card p-6 flex flex-col xl:col-span-1 h-[450px]">
+                <div class="flex justify-between items-start mb-2 relative z-10">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-200 flex items-center gap-2">
+                            <i class="ph-fill ph-trend-up text-up/80"></i> 期權月損益趨勢
+                        </h3>
+                        <p class="text-sm text-slate-400 mt-1">11406 - 11503 趨勢圖</p>
+                    </div>
+                </div>
+                <div id="pnlChart" class="flex-1 w-full mt-2"></div>
+            </div>
+
+        </div>
+
+        <!-- 第四排：折疊式區塊 (近期資金異動 + 流動資金帳戶) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Accordion 1: 近期資金異動 -->
+            <div class="glass-card h-fit">
+                <button class="w-full p-6 flex justify-between items-center text-left hover:bg-white/[0.02] transition" onclick="toggleAccordion('acc-flows')">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center border border-purple-500/20">
+                            <i class="ph-fill ph-arrows-left-right text-purple-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-slate-200">近期重要資金調度</h3>
+                            <p class="text-xs text-slate-400 mt-1">代操分潤與跨領域流動紀錄</p>
+                        </div>
+                    </div>
+                    <i id="acc-flows-icon" class="ph-bold ph-caret-down text-xl text-muted accordion-icon"></i>
+                </button>
+                <div id="acc-flows" class="accordion-content border-t border-white/5 bg-black/20 backdrop-blur-md">
+                    <div class="p-6">
+                        <div id="flows-container" class="relative border-l border-white/10 ml-4 space-y-6">
+                            
+                            <div class="relative pl-6">
+                                <div class="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-up shadow-[0_0_10px_rgba(0,232,143,0.6)]"></div>
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between">
+                                    <div>
+                                        <span class="text-xs text-slate-400 font-mono tracking-wider bg-white/5 px-2 py-0.5 rounded">115.01.05</span>
+                                        <h4 class="text-slate-200 text-base font-bold mt-2">投資出金 <span class="text-white/20 font-normal mx-1">|</span> 韋仔代操</h4>
+                                    </div>
+                                    <div class="mt-2 sm:mt-0 text-emerald-400 font-bold text-sm bg-emerald-400/10 px-3 py-1.5 rounded-lg border border-emerald-500/20">+ 158,888 TWD</div>
+                                </div>
+                            </div>
+                            
+                            <div class="relative pl-6">
+                                <div class="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-up shadow-[0_0_10px_rgba(0,232,143,0.6)]"></div>
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between">
+                                    <div>
+                                        <span class="text-xs text-slate-400 font-mono tracking-wider bg-white/5 px-2 py-0.5 rounded">114.10.07</span>
+                                        <h4 class="text-slate-200 text-base font-bold mt-2">投資出金 <span class="text-white/20 font-normal mx-1">|</span> 韋仔代操</h4>
+                                    </div>
+                                    <div class="mt-2 sm:mt-0 text-emerald-400 font-bold text-sm bg-emerald-400/10 px-3 py-1.5 rounded-lg border border-emerald-500/20">+ 100,000 TWD</div>
+                                </div>
+                            </div>
+
+                            <div class="relative pl-6">
+                                <div class="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-brand shadow-[0_0_10px_rgba(0,240,255,0.6)]"></div>
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between">
+                                    <div>
+                                        <span class="text-xs text-slate-400 font-mono tracking-wider bg-white/5 px-2 py-0.5 rounded">114.07.15</span>
+                                        <h4 class="text-slate-200 text-base font-bold mt-2">證券抽資 <span class="text-white/20 font-normal mx-1">|</span> 富邦證券</h4>
+                                    </div>
+                                    <div class="mt-2 sm:mt-0 text-cyan-400 font-bold text-sm bg-cyan-400/10 px-3 py-1.5 rounded-lg border border-cyan-500/20">+ 115,990 TWD</div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accordion 2: 流動資金帳戶 -->
+            <div class="glass-card h-fit">
+                <button class="w-full p-6 flex justify-between items-center text-left hover:bg-white/[0.02] transition" onclick="toggleAccordion('acc-accounts')">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center border border-blue-500/20">
+                            <i class="ph-fill ph-bank text-blue-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-slate-200">流動資金帳戶</h3>
+                            <p class="text-xs text-slate-400 mt-1">所有流動帳戶狀態總覽</p>
+                        </div>
+                    </div>
+                    <i id="acc-accounts-icon" class="ph-bold ph-caret-down text-xl text-muted accordion-icon"></i>
+                </button>
+                <div id="acc-accounts" class="accordion-content border-t border-white/5 bg-black/20 backdrop-blur-md">
+                    <div class="px-2 py-4 sm:px-6 sm:py-6 overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-center whitespace-nowrap min-w-[600px] border-collapse">
+                            <tbody class="divide-y divide-white/5">
+                                <!-- 第一組 -->
+                                <tr>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">郵局</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">富邦銀行</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">富邦銀行</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">富邦銀行</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">富邦銀行</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">玉山銀行</td>
+                                </tr>
+                                <tr>
+                                    <td class="pb-4 pt-1 px-2 text-xs text-emerald-400 border-r border-white/5 last:border-r-0">郵局薪轉帳戶</td>
+                                    <td class="pb-4 pt-1 px-2 text-xs text-emerald-400 border-r border-white/5 last:border-r-0">富邦公教存款戶</td>
+                                    <td class="pb-4 pt-1 px-2 text-xs text-emerald-400 border-r border-white/5 last:border-r-0">富邦一本萬利</td>
+                                    <td class="pb-4 pt-1 px-2 text-xs text-emerald-400 border-r border-white/5 last:border-r-0">富邦奈米存</td>
+                                    <td class="pb-4 pt-1 px-2 text-xs text-amber-500 border-r border-white/5 last:border-r-0">J卡/Costco</td>
+                                    <td class="pb-4 pt-1 px-2 text-xs text-emerald-400 border-r border-white/5 last:border-r-0">玉山帳戶</td>
+                                </tr>
+
+                                <!-- 第二組 -->
+                                <tr>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">玉山銀行</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">台新銀行</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">台新銀行</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">永豐銀行</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">永豐銀行</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">國泰世華</td>
+                                </tr>
+                                <tr>
+                                    <td class="pb-4 pt-1 px-2 text-xs text-amber-500 border-r border-white/5 last:border-r-0">Pi錢包/Ubear</td>
+                                    <td class="pb-4 pt-1 px-2 text-xs text-emerald-400 border-r border-white/5 last:border-r-0">Richart帳戶</td>
+                                    <td class="pb-4 pt-1 px-2 text-xs text-amber-500 border-r border-white/5 last:border-r-0">GoGo/FlyGo卡</td>
+                                    <td class="pb-4 pt-1 px-2 text-xs text-emerald-400 border-r border-white/5 last:border-r-0">DAWHO帳戶</td>
+                                    <td class="pb-4 pt-1 px-2 text-xs text-amber-500 border-r border-white/5 last:border-r-0">DAWHO信用卡</td>
+                                    <td class="pb-4 pt-1 px-2 text-xs text-emerald-400 border-r border-white/5 last:border-r-0">國泰帳戶</td>
+                                </tr>
+
+                                <!-- 第三組 -->
+                                <tr>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">國泰世華</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">中國信託</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">土地銀行</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">華南銀行</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">富邦人壽</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6"></td>
+                                </tr>
+                                <tr>
+                                    <td class="pb-4 pt-1 px-2 text-xs text-amber-500 border-r border-white/5 last:border-r-0">CUBE卡</td>
+                                    <td class="pb-4 pt-1 px-2 text-xs text-emerald-400 border-r border-white/5 last:border-r-0">中信帳戶</td>
+                                    <td class="pb-4 pt-1 px-2 text-xs text-emerald-400 border-r border-white/5 last:border-r-0">土銀帳戶</td>
+                                    <td class="pb-4 pt-1 px-2 text-xs text-emerald-400 border-r border-white/5 last:border-r-0">華南帳戶</td>
+                                    <td class="pb-4 pt-1 px-2 text-xs text-cyan-400 border-r border-white/5 last:border-r-0">美元保單</td>
+                                    <td class="pb-4 pt-1 px-2 text-xs"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const fmt = (num) => new Intl.NumberFormat('en-US').format(num);
+        function toggleAccordion(id) {
+            document.getElementById(id).classList.toggle('open');
+            document.getElementById(id + '-icon').classList.toggle('open');
+        }
+
+        const colorBrand = '#00F0FF';
+        const colorAccent = '#7000FF';
+        const colorUp = '#00E88F';
+        const colorDown = '#FF3366';
+        const colorText = '#CBD5E1';
+        const colorTextMuted = '#64748B';
+        const colorBorder = 'rgba(255, 255, 255, 0.08)';
+
+        // 1. 雙層旭日圖 (全域資產配置) - 新增多彩漸變區分
+        const allocChart = echarts.init(document.getElementById('allocChart'));
+        allocChart.setOption({
+            tooltip: {
+                backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                borderColor: 'rgba(255,255,255,0.1)',
+                backdropFilter: 'blur(10px)',
+                textStyle: { color: colorText, fontFamily: 'Outfit, Noto Sans TC' },
+                padding: 16,
+                borderRadius: 12,
+                formatter: p => `
+                    <div class="font-bold text-slate-100 mb-2 text-base tracking-wide">${p.name}</div>
+                    <div class="text-cyan-400 font-mono text-xl mb-1 font-bold">NT$ ${fmt(p.value)}</div>
+                    <div class="text-xs text-slate-400 font-medium tracking-wider">佔比: ${p.percent}%</div>`
+            },
+            series: [
+                {
+                    type: 'pie',
+                    radius: ['0%', '38%'],
+                    center: ['50%', '50%'],
+                    itemStyle: { borderColor: '#0B0F19', borderWidth: 4 },
+                    label: { position: 'inner', fontSize: 13, color: '#fff', formatter: '{b}', fontWeight: 'bold', fontFamily: 'Outfit, Noto Sans TC' },
+                    emphasis: { scale: true, scaleSize: 4, itemStyle: { shadowBlur: 20, shadowColor: 'rgba(0,0,0,0.5)' } },
+                    data: [
+                        { value: 3115008, name: '流動資金', itemStyle: { color: '#0284c7' } }, 
+                        { value: 5186251, name: '投資部位', itemStyle: { color: '#7e22ce' } }
+                    ]
+                },
+                {
+                    type: 'pie',
+                    radius: ['48%', '75%'],
+                    center: ['50%', '50%'],
+                    itemStyle: { borderColor: '#0B0F19', borderWidth: 3, borderRadius: 4 },
+                    label: { color: '#E2E8F0', fontSize: 13, formatter: '{b}  {d}%', fontFamily: 'Outfit, Noto Sans TC', fontWeight: 500 },
+                    labelLine: { lineStyle: { color: 'rgba(255,255,255,0.3)' }, smooth: 0.2, length: 15, length2: 25 },
+                    emphasis: { scale: true, scaleSize: 6, itemStyle: { shadowBlur: 20, shadowColor: 'rgba(255, 255, 255, 0.2)' } },
+                    data: [
+                        { value: 573216, name: '公教定存', itemStyle: { color: '#38bdf8' } },
+                        { value: 1051503, name: '富邦活存', itemStyle: { color: '#0ea5e9' } },
+                        { value: 629590, name: '美元保單', itemStyle: { color: '#2dd4bf' } },
+                        { value: 579251, name: '永豐大戶', itemStyle: { color: '#0284c7' } },
+                        { value: 190643, name: '台新(含JPY)', itemStyle: { color: '#3b82f6' } },
+                        { value: 59658,  name: '玉山/郵局', itemStyle: { color: '#6366f1' } },
+                        
+                        { value: 1515271, name: '期貨主帳', itemStyle: { color: '#a855f7' } },
+                        { value: 500000, name: '韋仔代操', itemStyle: { color: '#d946ef' } },
+                        { value: 500000, name: '培儒代操', itemStyle: { color: '#f43f5e' } },
+                        { value: 2670980, name: '加密貨幣', itemStyle: { color: '#f59e0b' } }
+                    ]
+                }
+            ]
+        });
+
+        // 2. 加密貨幣標準環形圖
+        const cryptoChart = echarts.init(document.getElementById('cryptoChart'));
+        cryptoChart.setOption({
+            tooltip: {
+                backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                borderColor: 'rgba(255,255,255,0.1)',
+                backdropFilter: 'blur(10px)',
+                textStyle: { color: colorText, fontFamily: 'Outfit, Noto Sans TC' },
+                padding: 12, borderRadius: 10,
+                formatter: '{b}: <br/><span class="text-yellow-400 font-bold font-mono text-base">{c} U</span> <span class="text-slate-400 text-sm">({d}%)</span>'
+            },
+            series: [{
+                type: 'pie',
+                radius: ['52%', '80%'],
+                center: ['50%', '50%'],
+                minAngle: 2,
+                itemStyle: { borderRadius: 8, borderColor: '#0B0F19', borderWidth: 3 },
+                emphasis: { scale: true, scaleSize: 8, itemStyle: { shadowBlur: 15, shadowColor: 'rgba(234, 179, 8, 0.3)' } },
+                label: { color: '#E2E8F0', fontSize: 14, formatter: '{b}  {d}%', fontFamily: 'Outfit, Noto Sans TC', fontWeight: 500 },
+                labelLine: { lineStyle: { color: 'rgba(255,255,255,0.3)' }, smooth: 0.2, length: 15, length2: 15 },
+                data: [
+                    { value: 84508, name: 'Bitfinex', itemStyle: { color: '#f59e0b' } },
+                    { value: 285, name: 'BYBIT', itemStyle: { color: '#a855f7' } }
+                ]
+            }]
+        });
+
+        // 3. 期權月損益趨勢
+        const pnlChart = echarts.init(document.getElementById('pnlChart'));
+        pnlChart.setOption({
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'cross', label: { backgroundColor: '#1e293b' }, crossStyle: { color: 'rgba(255,255,255,0.2)' } },
+                backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                borderColor: 'rgba(255,255,255,0.1)',
+                backdropFilter: 'blur(10px)',
+                textStyle: { color: colorText, fontFamily: 'Outfit, Noto Sans TC' },
+                borderRadius: 10, padding: 12
+            },
+            legend: { data: ['當月損益', '累計損益'], textStyle: { color: colorTextMuted, fontSize: 12 }, top: 0, icon: 'circle' },
+            grid: { left: '2%', right: '4%', bottom: '2%', containLabel: true },
+            xAxis: {
+                type: 'category',
+                data: ['11406', '11407', '11408', '11409', '11410', '11411', '11412', '11501', '11502', '11503'],
+                axisLabel: { color: colorTextMuted, fontSize: 11, fontFamily: 'Outfit, Noto Sans TC' },
+                axisLine: { lineStyle: { color: colorBorder } },
+                axisTick: { show: false }
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: { color: colorTextMuted, fontSize: 11, fontFamily: 'Outfit, Noto Sans TC' },
+                splitLine: { lineStyle: { color: colorBorder, type: 'dashed' } }
+            },
+            series: [
+                {
+                    name: '當月損益',
+                    type: 'bar',
+                    barWidth: '35%',
+                    itemStyle: {
+                        color: function (params) {
+                            return params.value >= 0 ? colorBrand : colorDown;
+                        },
+                        borderRadius: [4, 4, 0, 0]
+                    },
+                    data: [15858, 13533, 12335, 5586, 58898, 14074, 19179, -17428, 79527, 17449]
+                },
+                {
+                    name: '累計損益',
+                    type: 'line',
+                    smooth: true,
+                    symbolSize: 8,
+                    symbol: 'circle',
+                    itemStyle: { color: colorUp, borderWidth: 2 },
+                    lineStyle: { width: 3, shadowColor: 'rgba(0, 232, 143, 0.5)', shadowBlur: 10 },
+                    areaStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: 'rgba(0, 232, 143, 0.25)' },
+                            { offset: 1, color: 'rgba(0, 232, 143, 0)' }
+                        ])
+                    },
+                    data: [-34748, -21215, -8880, -3294, 55604, 69678, 88857, 71429, 150956, 168405]
+                }
+            ]
+        });
+
+        window.addEventListener('resize', () => {
+            allocChart.resize();
+            cryptoChart.resize();
+            pnlChart.resize();
+        });
+
+        // Registered Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').then(registration => {
+                    console.log('SW registered: ', registration);
+                }).catch(registrationError => {
+                    console.log('SW registration failed: ', registrationError);
+                });
+            });
+        }
+
+        // --- Dynamic Data Fetching (Google Sheets API Engine) ---
+        const SHEET_ID = '10e0_uS1VNUDgkPsT22xJQjALwrpC1EyW4ZlaaSumujw';
+        
+        async function fetchSheetData(sheetName) {
+            const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
+            try {
+                const res = await fetch(url);
+                const text = await res.text();
+                // Extract valid JSON from the google visualization payload
+                const match = text.match(/google\.visualization\.Query\.setResponse\((.+)\);/);
+                if (match && match[1]) {
+                    const data = JSON.parse(match[1]);
+                    if (data.status === 'error') {
+                        console.warn(`[GVIZ Error] ${sheetName}:`, data.errors[0].message);
+                        return null;
+                    }
+                    return data.table;
+                }
+            } catch(err) {
+                console.error(`[Fetch Error] ${sheetName}:`, err);
+            }
+            return null;
+        }
+
+        async function syncDashboardData() {
+            const overlay = document.getElementById('loading-overlay');
+            
+            try {
+                // 1. Fetch KPI API Sheet (For all single values and dynamic charts)
+                const apiData = await fetchSheetData('Dashboard_API');
+                if (apiData && apiData.rows) {
+                    const dict = {};
+                    const allocData = [];
+                    const cryptoData = [];
+                    const deepList = [];
+
+                    apiData.rows.forEach(r => {
+                        if (r && r.c && r.c[0] && r.c[0].v != null && r.c[1] != null) {
+                            const key = String(r.c[0].v);
+                            const val = r.c[1].v;
+                            
+                            if (key.startsWith('全域_')) {
+                                if (Number(val) !== 0) allocData.push({ name: key.replace('全域_', ''), value: Number(val) });
+                            } else if (key.startsWith('加密_')) {
+                                if (Number(val) !== 0) cryptoData.push({ name: key.replace('加密_', ''), value: Number(val) });
+                            } else if (key.startsWith('深度_')) {
+                                // For Deep Analysis: B = Invested, C = Current, D = PnL
+                                const invested = Number(val);
+                                const current = r.c[2] ? Number(r.c[2].v) : 0;
+                                const pnl = r.c[3] ? Number(r.c[3].v) : (current - invested);
+                                // Skip deep analysis if BOTH invested and current are 0 (e.g., unused row)
+                                if (invested !== 0 || current !== 0) {
+                                    deepList.push({ name: key.replace('深度_', ''), invested, current, pnl });
+                                }
+                            } else {
+                                dict[key] = val; // Regular KPIs
+                            }
+                        }
+                    });
+                    
+                    // Inject KPI values if they exist
+                    if(dict['當前真實淨值'] != null) document.getElementById('val-networth').innerText = fmt(dict['當前真實淨值']);
+                    if(dict['基準日']) document.getElementById('val-date').innerText = `基準日：${dict['基準日']}`;
+                    if(dict['總資產'] != null) document.getElementById('val-total-asset').innerText = fmt(dict['總資產']);
+                    if(dict['流動資產'] != null && dict['投資部位'] != null) {
+                        document.getElementById('val-asset-split').innerHTML = `流動 ${(dict['流動資產']/1000000).toFixed(2)}M <span class="text-white/20 mx-1">|</span> 投資 ${(dict['投資部位']/1000000).toFixed(2)}M`;
+                    }
+                    if(dict['負債總額'] != null) document.getElementById('val-total-liab').innerText = '- ' + fmt(Math.abs(dict['負債總額']));
+                    if(dict['已知投資損益'] != null) document.getElementById('val-pnl').innerText = (dict['已知投資損益'] < 0 ? '- ' : '+ ') + fmt(Math.abs(dict['已知投資損益']));
+                    if(dict['已知沉沒成本'] != null) document.getElementById('val-sunk').innerText = (dict['已知沉沒成本'] < 0 ? '- ' : '+ ') + fmt(Math.abs(dict['已知沉沒成本']));
+                    if(dict['薪資總收入'] != null) document.getElementById('val-salary').innerText = fmt(dict['薪資總收入']);
+                    if(dict['推估歷史總花費'] != null) document.getElementById('val-expense').innerText = fmt(dict['推估歷史總花費']);
+                    if(dict['推估月均開銷'] != null) document.getElementById('val-monthly').innerText = fmt(dict['推估月均開銷']);
+
+                    // Update allocChart (Double Pie)
+                    if (allocData.length > 0 && dict['流動資產'] != null && dict['投資部位'] != null) {
+                        // Assign some nice colors
+                        const colors = ['#38bdf8', '#0ea5e9', '#2dd4bf', '#0284c7', '#3b82f6', '#6366f1', '#a855f7', '#d946ef', '#f43f5e', '#f59e0b'];
+                        allocData.forEach((item, idx) => { item.itemStyle = { color: colors[idx % colors.length] }; });
+                        
+                        allocChart.setOption({
+                            series: [
+                                { data: [
+                                    { value: dict['流動資產'], name: '流動資金', itemStyle: { color: '#0284c7' } }, 
+                                    { value: dict['投資部位'], name: '投資部位', itemStyle: { color: '#7e22ce' } }
+                                ]},
+                                { data: allocData }
+                            ]
+                        });
+                    }
+
+                    // Update cryptoChart (Ring Pie)
+                    if (cryptoData.length > 0) {
+                        const cryptoColors = ['#f59e0b', '#a855f7', '#38bdf8', '#2dd4bf'];
+                        cryptoData.forEach((item, idx) => { item.itemStyle = { color: cryptoColors[idx % cryptoColors.length] }; });
+                        
+                        // Calculate total for display
+                        const totalU = cryptoData.reduce((sum, item) => sum + item.value, 0);
+                        document.getElementById('val-crypto-total').innerText = `總額 ${fmt(totalU)} U`;
+
+                        cryptoChart.setOption({
+                            series: [{ data: cryptoData }]
+                        });
+                    }
+
+                    // Update Deep Analysis Table
+                    if (deepList.length > 0) {
+                        let html = '';
+                        deepList.forEach(item => {
+                            const isWin = item.pnl >= 0;
+                            const sign = isWin ? '+' : '-';
+                            const pnlColor = isWin ? 'text-emerald-400' : 'text-rose-400';
+                            const badge = isWin ? 
+                                `<span class="px-3 py-1.5 text-xs rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 font-bold">🟢 獲利中</span>` : 
+                                `<span class="px-3 py-1.5 text-xs rounded-full border border-rose-500/30 bg-rose-500/10 text-rose-400 font-bold">🔴 虧損中</span>`;
+
+                            html += `
+                            <tr class="table-row-hover bg-white/[0.02]">
+                                <td class="px-5 py-4 text-slate-200 font-medium rounded-l-lg">${item.name}</td>
+                                <td class="px-5 py-4 text-muted font-mono text-sm">${fmt(item.invested)}</td>
+                                <td class="px-5 py-4 text-slate-200 font-mono text-sm">${fmt(item.current)}</td>
+                                <td class="px-5 py-4 ${pnlColor} font-bold font-mono text-sm">${sign} ${fmt(Math.abs(item.pnl))}</td>
+                                <td class="px-5 py-4 rounded-r-lg">${badge}</td>
+                            </tr>`;
+                        });
+                        document.getElementById('deep-analysis-body').innerHTML = html;
+                    }
+                }
+
+                // 2. Fetch PnL History (For Options Chart)
+                // The sheet format expected: Col 0 (Month), Col 2 (Monthly PnL), Col 4/5 (Cumulative PnL)
+                const pnlData = await fetchSheetData('3.投資損益明');
+                if (pnlData && pnlData.rows) {
+                    const months = [];
+                    const monthlyPnl = [];
+                    const cumPnl = [];
+                    pnlData.rows.slice(-10).forEach(r => {
+                        if (r && r.c && r.c[0]) {
+                            months.push(r.c[0].f || r.c[0].v);
+                            monthlyPnl.push(r.c[2] ? r.c[2].v : 0);
+                            cumPnl.push(r.c[5] ? r.c[5].v : 0);
+                        }
+                    });
+                    
+                    if (months.length > 0) {
+                        pnlChart.setOption({
+                            xAxis: { data: months },
+                            series: [
+                                { data: monthlyPnl },
+                                { data: cumPnl }
+                            ]
+                        });
+                    }
+                }
+
+                // 3. Fetch Recent Flows (For Accordion list)
+                const flowsData = await fetchSheetData('1.總資產數據');
+                if (flowsData && flowsData.rows) {
+                    let html = '';
+                    // Get last 5 valid rows
+                    const validRows = flowsData.rows.filter(r => r && r.c && r.c[0]);
+                    const lastRows = validRows.slice(-5).reverse();
+                    
+                    lastRows.forEach((r, idx) => {
+                        const date = r.c[0].v;
+                        const action = r.c[1] ? r.c[1].v : '異動';
+                        const account = r.c[2] ? r.c[2].v : '';
+                        const amount = r.c[4] ? r.c[4].v : 0;
+                        const sign = amount >= 0 ? '+' : '-';
+                        
+                        // Alternate colors based on index
+                        const colors = [
+                            { bg: 'bg-up', shadow: 'rgba(0,232,143,0.6)', text: 'text-emerald-400', badge: 'bg-emerald-400/10 border-emerald-500/20' },
+                            { bg: 'bg-brand', shadow: 'rgba(0,240,255,0.6)', text: 'text-cyan-400', badge: 'bg-cyan-400/10 border-cyan-500/20' },
+                            { bg: 'bg-purple-500', shadow: 'rgba(168,85,247,0.6)', text: 'text-purple-400', badge: 'bg-purple-500/10 border-purple-500/20' },
+                        ];
+                        const c = colors[idx % colors.length];
+
+                        html += `
+                        <div class="relative pl-6">
+                            <div class="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full ${c.bg} shadow-[0_0_10px_${c.shadow}]"></div>
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between">
+                                <div>
+                                    <span class="text-xs text-slate-400 font-mono tracking-wider bg-white/5 px-2 py-0.5 rounded">${date}</span>
+                                    <h4 class="text-slate-200 text-base font-bold mt-2">${action} <span class="text-white/20 font-normal mx-1">|</span> ${account}</h4>
+                                </div>
+                                <div class="mt-2 sm:mt-0 ${c.text} font-bold text-sm ${c.badge} px-3 py-1.5 rounded-lg border">${sign} ${fmt(Math.abs(amount))} TWD</div>
+                            </div>
+                        </div>`;
+                    });
+                    
+                    if (html !== '') {
+                        document.getElementById('flows-container').innerHTML = html;
+                    }
+                }
+
+            } catch(e) {
+                console.error("Dashboard synchronization failed: ", e);
+            } finally {
+                // Hide overlay exactly 0.5s after finishing fetching to ensure smooth presentation
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                }, 500);
+            }
+        }
+
+        // Trigger sync automatically when everything is initialized
+        syncDashboardData();
+    </script>
+</body>
+</html>

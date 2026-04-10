@@ -1,4 +1,4 @@
-const CACHE_NAME = 'benson-pro-v2';
+const CACHE_NAME = 'benson-pro-v3';
 const urlsToCache = [
   './dashboard.html',
   './icon-192.png',
@@ -30,7 +30,7 @@ self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
 
   // Let the browser handle google sheets api directly, don't cache data requests so it's always fresh
-  if (event.request.url.includes('docs.google.com')) {
+  if (event.request.url.includes('docs.google.com') || event.request.url.includes('workers.dev')) {
     return;
   }
 

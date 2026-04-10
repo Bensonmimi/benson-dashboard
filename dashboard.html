@@ -752,7 +752,8 @@
         const WORKER_URL = 'https://benson-dash.sc70613.workers.dev';
         
         async function fetchSheetData(sheetName) {
-            const url = `${WORKER_URL}/?sheet=${encodeURIComponent(sheetName)}&token=benson706`;
+            // 加入時間戳記避免各層級強迫快取
+            const url = `${WORKER_URL}/?sheet=${encodeURIComponent(sheetName)}&token=benson706&_t=${Date.now()}`;
             try {
                 const res = await fetch(url);
                 const text = await res.text();

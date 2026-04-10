@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Benson資產配置儀表板 | 專業資產終端</title>
+    <title>Benson資產儀表板 | 專業資產終端</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -108,7 +108,7 @@
         ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
 
         .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.5s ease, opacity 0.4s ease; opacity: 0; }
-        .accordion-content.open { max-height: 1000px; opacity: 1; }
+        .accordion-content.open { max-height: 6000px; opacity: 1; }
         .accordion-icon { transition: transform 0.4s ease; }
         .accordion-icon.open { transform: rotate(180deg); }
 
@@ -145,7 +145,7 @@
     <!-- Loading Overlay -->
     <div id="loading-overlay">
         <div class="spinner mb-4"></div>
-        <h2 class="text-xl font-bold text-slate-200 tracking-wider animate-pulse">Syncing Data...</h2>
+        <h2 class="text-xl font-bold text-slate-300 tracking-wider animate-pulse">Syncing Data...</h2>
         <p class="text-sm text-brand/80 mt-2 font-medium">從 Google 終端讀取最新數據</p>
     </div>
 
@@ -155,9 +155,9 @@
         <header class="flex flex-col lg:flex-row justify-between items-start lg:items-end border-b border-white/5 pb-6 mb-8 gap-6">
             <div class="relative">
                 <div class="absolute -top-10 -left-10 w-40 h-40 bg-brand/10 blur-[80px] rounded-full pointer-events-none"></div>
-                <h1 class="text-3xl lg:text-4xl font-bold text-slate-200 flex items-center gap-3 tracking-tight">
+                <h1 class="text-3xl lg:text-4xl font-bold text-slate-300 flex items-center gap-3 tracking-tight">
                     <i class="ph-fill ph-planet text-brand animate-pulse"></i> 
-                    Benson資產配置 <span class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand to-accent opacity-80">Pro</span>
+                    Benson資產儀表板
                 </h1>
                 <div class="mt-4">
                     <h4 class="text-base md:text-lg font-bold text-slate-400 tracking-wider uppercase mb-1">當前真實淨值 (Net Worth)</h4>
@@ -190,7 +190,7 @@
                     </div>
                 </div>
                 <div>
-                    <h3 id="val-total-asset" class="text-3xl lg:text-4xl font-bold text-slate-100 tracking-tight">8,301,259</h3>
+                    <h3 id="val-total-asset" class="text-3xl lg:text-4xl font-bold text-slate-300 tracking-tight">8,301,259</h3>
                     <p id="val-asset-split" class="text-sm text-brand/80 mt-2 font-medium">流動 3.11M <span class="text-white/20 mx-1">|</span> 投資 5.18M</p>
                 </div>
             </div>
@@ -204,7 +204,7 @@
                 </div>
                 <div>
                     <h3 id="val-total-liab" class="text-3xl lg:text-4xl font-bold text-yellow-400 tracking-tight">- 690,378</h3>
-                    <p class="text-sm text-yellow-500/70 mt-2 font-medium">個人借貸(爸爸)與保單借款</p>
+                    <p class="text-sm text-yellow-500/70 mt-2 font-medium">個人借貸與保單借款</p>
                 </div>
             </div>
 
@@ -244,20 +244,20 @@
                 <div class="glass-card p-4 flex flex-col justify-center bg-glow-up relative overflow-hidden group">
                     <i class="ph-fill ph-money absolute -bottom-4 -right-4 text-7xl text-up/10 transition-transform group-hover:scale-110"></i>
                     <h4 class="text-sm font-bold text-slate-400 tracking-wider mb-2">薪資總收入</h4>
-                    <h3 id="val-salary" class="text-lg lg:text-xl font-bold text-slate-100 tracking-tight z-10">12,714,831</h3>
+                    <h3 id="val-salary" class="text-lg lg:text-xl font-bold text-slate-300 tracking-tight z-10">12,714,831</h3>
                 </div>
 
                 <div class="glass-card p-4 flex flex-col justify-center bg-glow-warn relative overflow-hidden group">
                     <i class="ph-fill ph-clock absolute -bottom-4 -right-4 text-7xl text-yellow-500/10 transition-transform group-hover:scale-110"></i>
                     <!-- 將 歷史總花費 顯示名稱改為 推估歷史總花費 -->
                     <h4 class="text-sm font-bold text-slate-400 tracking-wider mb-2">推估歷史總花費</h4>
-                    <h3 id="val-expense" class="text-lg lg:text-xl font-bold text-slate-100 tracking-tight z-10">2,639,669</h3>
+                    <h3 id="val-expense" class="text-lg lg:text-xl font-bold text-slate-300 tracking-tight z-10">2,639,669</h3>
                 </div>
 
                 <div class="glass-card p-4 flex flex-col justify-center bg-glow-brand relative overflow-hidden group">
                     <i class="ph-fill ph-coins absolute -bottom-4 -right-4 text-7xl text-white/5 transition-transform group-hover:scale-110"></i>
                     <h4 class="text-sm font-bold text-slate-400 tracking-wider mb-2">推估月均開銷</h4>
-                    <h3 id="val-monthly" class="text-lg lg:text-xl font-bold text-slate-100 tracking-tight z-10">21,461</h3>
+                    <h3 id="val-monthly" class="text-lg lg:text-xl font-bold text-slate-300 tracking-tight z-10">21,461</h3>
                 </div>
             </div>
 
@@ -265,7 +265,7 @@
             <div class="glass-card flex flex-col xl:col-start-1 xl:col-span-2 xl:row-start-1 xl:row-span-2 h-[600px] lg:h-[650px] order-2 z-10">
                 <div class="p-6 flex justify-between items-start mb-2 relative z-10 pb-0">
                     <div>
-                        <h3 class="text-xl font-bold text-slate-200 flex items-center gap-2">
+                        <h3 class="text-xl font-bold text-slate-300 flex items-center gap-2">
                             <i class="ph-fill ph-pie-chart text-brand/80"></i> 全域資產配置
                         </h3>
                     </div>
@@ -277,7 +277,7 @@
             <div class="glass-card p-6 flex flex-col xl:col-start-3 xl:row-start-2 min-h-[350px] order-3">
                 <div class="flex justify-between items-start mb-2 relative z-10">
                     <div>
-                        <h3 class="text-lg font-bold text-slate-200 flex items-center gap-2">
+                        <h3 class="text-lg font-bold text-slate-300 flex items-center gap-2">
                             <i class="ph-fill ph-currency-btc text-yellow-500/80"></i> 加密資產分布
                         </h3>
                         <p id="val-crypto-total" class="text-sm text-yellow-500/70 font-medium mt-1">總額 84,793 U</p>
@@ -298,7 +298,7 @@
                             <i class="ph-fill ph-target text-accent text-xl"></i>
                         </div>
                         <div>
-                            <h3 class="text-lg font-bold text-slate-200">投資損益深度分析</h3>
+                            <h3 class="text-lg font-bold text-slate-300">投資損益深度分析</h3>
                             <p class="text-sm text-slate-400">各項資產之投入金額、目前金額與真實損益</p>
                         </div>
                     </div>
@@ -316,37 +316,37 @@
                         </thead>
                         <tbody id="deep-analysis-body">
                             <tr class="table-row-hover bg-white/[0.02]">
-                                <td class="px-5 py-4 text-slate-200 font-medium rounded-l-lg">期貨 富邦期貨戶</td>
+                                <td class="px-5 py-4 text-slate-300 font-medium rounded-l-lg">期貨 富邦期貨戶</td>
                                 <td class="px-5 py-4 text-muted font-mono text-sm">3,830,000</td>
-                                <td class="px-5 py-4 text-slate-200 font-mono text-sm">1,515,271</td>
+                                <td class="px-5 py-4 text-slate-300 font-mono text-sm">1,515,271</td>
                                 <td class="px-5 py-4 text-rose-400 font-bold font-mono text-sm">- 2,314,729</td>
                                 <td class="px-5 py-4 rounded-r-lg"><span class="px-3 py-1.5 text-xs rounded-full border border-rose-500/30 bg-rose-500/10 text-rose-400 font-bold">🔴 虧損中</span></td>
                             </tr>
                             <tr class="table-row-hover bg-white/[0.02]">
-                                <td class="px-5 py-4 text-slate-200 font-medium rounded-l-lg">證券 富邦證券戶</td>
+                                <td class="px-5 py-4 text-slate-300 font-medium rounded-l-lg">證券 富邦證券戶</td>
                                 <td class="px-5 py-4 text-muted font-mono text-sm">15,249</td>
-                                <td class="px-5 py-4 text-slate-200 font-mono text-sm">0</td>
+                                <td class="px-5 py-4 text-slate-300 font-mono text-sm">0</td>
                                 <td class="px-5 py-4 text-rose-400 font-bold font-mono text-sm">- 15,249</td>
                                 <td class="px-5 py-4 rounded-r-lg"><span class="px-3 py-1.5 text-xs rounded-full border border-rose-500/30 bg-rose-500/10 text-rose-400 font-bold">🔴 已出清虧損</span></td>
                             </tr>
                             <tr class="table-row-hover bg-white/[0.02]">
-                                <td class="px-5 py-4 text-slate-200 font-medium rounded-l-lg">代操 韋仔代操</td>
+                                <td class="px-5 py-4 text-slate-300 font-medium rounded-l-lg">代操 韋仔代操</td>
                                 <td class="px-5 py-4 text-muted font-mono text-sm">41,110</td>
-                                <td class="px-5 py-4 text-slate-200 font-mono text-sm">500,000</td>
+                                <td class="px-5 py-4 text-slate-300 font-mono text-sm">500,000</td>
                                 <td class="px-5 py-4 text-emerald-400 font-bold font-mono text-sm">+ 458,890</td>
                                 <td class="px-5 py-4 rounded-r-lg"><span class="px-3 py-1.5 text-xs rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 font-bold">🟢 獲利中</span></td>
                             </tr>
                             <tr class="table-row-hover bg-white/[0.02]">
-                                <td class="px-5 py-4 text-slate-200 font-medium rounded-l-lg">代操 培儒代操</td>
+                                <td class="px-5 py-4 text-slate-300 font-medium rounded-l-lg">代操 培儒代操</td>
                                 <td class="px-5 py-4 text-muted font-mono text-sm">266,500</td>
-                                <td class="px-5 py-4 text-slate-200 font-mono text-sm">500,000</td>
+                                <td class="px-5 py-4 text-slate-300 font-mono text-sm">500,000</td>
                                 <td class="px-5 py-4 text-emerald-400 font-bold font-mono text-sm">+ 233,500</td>
                                 <td class="px-5 py-4 rounded-r-lg"><span class="px-3 py-1.5 text-xs rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 font-bold">🟢 獲利中</span></td>
                             </tr>
                             <tr class="table-row-hover bg-white/[0.02]">
-                                <td class="px-5 py-4 text-slate-200 font-medium rounded-l-lg">加密貨幣總部位 (USD)</td>
+                                <td class="px-5 py-4 text-slate-300 font-medium rounded-l-lg">加密貨幣總部位 (USD)</td>
                                 <td class="px-5 py-4 text-muted font-mono text-sm">84,620</td>
-                                <td class="px-5 py-4 text-slate-200 font-mono text-sm">84,793</td>
+                                <td class="px-5 py-4 text-slate-300 font-mono text-sm">84,793</td>
                                 <td class="px-5 py-4 text-brand font-bold font-mono text-sm">+ 173</td>
                                 <td class="px-5 py-4 rounded-r-lg"><span class="px-3 py-1.5 text-xs rounded-full border border-brand/30 bg-brand/10 text-brand font-bold">🟢 獲利中</span></td>
                             </tr>
@@ -359,7 +359,7 @@
             <div class="glass-card p-6 flex flex-col xl:col-span-1 h-[450px]">
                 <div class="flex justify-between items-start mb-2 relative z-10">
                     <div>
-                        <h3 class="text-lg font-bold text-slate-200 flex items-center gap-2">
+                        <h3 class="text-lg font-bold text-slate-300 flex items-center gap-2">
                             <i class="ph-fill ph-trend-up text-up/80"></i> 期權月損益趨勢
                         </h3>
                         <p class="text-sm text-slate-400 mt-1">11406 - 11503 趨勢圖</p>
@@ -373,6 +373,54 @@
         <!-- 第四排：折疊式區塊 -->
         <div class="grid grid-cols-1 gap-6">
 
+            <!-- Accordion 1: 電子發票分析 -->
+            <div class="glass-card h-fit">
+                <button class="w-full p-6 flex justify-between items-center text-left hover:bg-white/[0.02] transition" onclick="toggleAccordion('acc-invoice')">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-teal-500/20 flex items-center justify-center border border-teal-500/20">
+                            <i class="ph-fill ph-receipt text-teal-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-slate-300">電子發票分析</h3>
+                            <p class="text-xs text-slate-400 mt-1">歷史月份開銷與明細紀錄</p>
+                        </div>
+                    </div>
+                    <i id="acc-invoice-icon" class="ph-bold ph-caret-down text-xl text-muted accordion-icon"></i>
+                </button>
+                <div id="acc-invoice" class="accordion-content border-t border-white/5 bg-black/20 backdrop-blur-md">
+                    <div class="px-3 py-4 sm:px-6 sm:py-6 flex flex-col gap-6">
+                        <!-- 上半部：月開銷統計 -->
+                        <div>
+                            <h4 class="text-sm font-bold text-slate-300 mb-3 flex items-center gap-2"><i class="ph-fill ph-calendar-blank text-teal-400"></i> 月開銷統計</h4>
+                            <div class="overflow-x-auto custom-scrollbar pb-2">
+                                <div id="invoice-monthly-stats" class="flex gap-3 min-w-max">
+                                    <div class="text-sm text-slate-500 italic px-2">載入中...</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="h-px w-full bg-white/5"></div>
+
+                        <!-- 下半部：發票明細 -->
+                        <div>
+                            <div class="flex justify-start items-center mb-4 gap-4">
+                                <h4 class="text-sm font-bold text-slate-300 flex items-center gap-2"><i class="ph-fill ph-lines-list text-teal-400"></i> 發票明細</h4>
+                                <div class="flex items-center gap-3 bg-white/5 rounded-full px-1 py-1 border border-white/10">
+                                    <button onclick="changeInvoiceMonth(-1)" class="w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/10 transition text-slate-300" title="上一個月"><i class="ph-bold ph-caret-left"></i></button>
+                                    <span id="invoice-current-month" class="text-sm font-bold text-slate-300 min-w-[70px] text-center">---</span>
+                                    <button onclick="changeInvoiceMonth(1)" class="w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/10 transition text-slate-300" title="下一個月"><i class="ph-bold ph-caret-right"></i></button>
+                                </div>
+                            </div>
+                            
+                            <div id="invoice-details-container" class="w-full mt-2">
+                                <div class="text-center text-slate-600 italic py-4">載入中...</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
             <!-- Accordion 2: 流動資金帳戶 -->
             <div class="glass-card h-fit">
                 <button class="w-full p-6 flex justify-between items-center text-left hover:bg-white/[0.02] transition" onclick="toggleAccordion('acc-accounts')">
@@ -381,7 +429,7 @@
                             <i class="ph-fill ph-bank text-blue-400 text-xl"></i>
                         </div>
                         <div>
-                            <h3 class="text-base font-bold text-slate-200">流動資金帳戶</h3>
+                            <h3 class="text-base font-bold text-slate-300">流動資金帳戶</h3>
                             <p class="text-xs text-slate-400 mt-1">所有流動帳戶狀態總覽</p>
                         </div>
                     </div>
@@ -393,12 +441,12 @@
                             <tbody class="divide-y divide-white/5">
                                 <!-- 第一組 -->
                                 <tr>
-                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">郵局</td>
-                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">富邦銀行</td>
-                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">富邦銀行</td>
-                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">富邦銀行</td>
-                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">富邦銀行</td>
-                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">玉山銀行</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-300 w-1/6 border-r border-white/5 last:border-r-0">郵局</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-300 w-1/6 border-r border-white/5 last:border-r-0">富邦銀行</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-300 w-1/6 border-r border-white/5 last:border-r-0">富邦銀行</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-300 w-1/6 border-r border-white/5 last:border-r-0">富邦銀行</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-300 w-1/6 border-r border-white/5 last:border-r-0">富邦銀行</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-300 w-1/6 border-r border-white/5 last:border-r-0">玉山銀行</td>
                                 </tr>
                                 <tr>
                                     <td class="pb-4 pt-1 px-2 text-xs text-emerald-400 border-r border-white/5 last:border-r-0">郵局薪轉帳戶</td>
@@ -411,12 +459,12 @@
 
                                 <!-- 第二組 -->
                                 <tr>
-                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">玉山銀行</td>
-                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">台新銀行</td>
-                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">台新銀行</td>
-                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">永豐銀行</td>
-                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">永豐銀行</td>
-                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">國泰世華</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-300 w-1/6 border-r border-white/5 last:border-r-0">玉山銀行</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-300 w-1/6 border-r border-white/5 last:border-r-0">台新銀行</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-300 w-1/6 border-r border-white/5 last:border-r-0">台新銀行</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-300 w-1/6 border-r border-white/5 last:border-r-0">永豐銀行</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-300 w-1/6 border-r border-white/5 last:border-r-0">永豐銀行</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-300 w-1/6 border-r border-white/5 last:border-r-0">國泰世華</td>
                                 </tr>
                                 <tr>
                                     <td class="pb-4 pt-1 px-2 text-xs text-amber-500 border-r border-white/5 last:border-r-0">Pi錢包/Ubear</td>
@@ -429,12 +477,12 @@
 
                                 <!-- 第三組 -->
                                 <tr>
-                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">國泰世華</td>
-                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">中國信託</td>
-                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">土地銀行</td>
-                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">華南銀行</td>
-                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6 border-r border-white/5 last:border-r-0">富邦人壽</td>
-                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-200 w-1/6"></td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-300 w-1/6 border-r border-white/5 last:border-r-0">國泰世華</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-300 w-1/6 border-r border-white/5 last:border-r-0">中國信託</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-300 w-1/6 border-r border-white/5 last:border-r-0">土地銀行</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-300 w-1/6 border-r border-white/5 last:border-r-0">華南銀行</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-300 w-1/6 border-r border-white/5 last:border-r-0">富邦人壽</td>
+                                    <td class="pt-4 pb-1 px-2 font-bold text-slate-300 w-1/6"></td>
                                 </tr>
                                 <tr>
                                     <td class="pb-4 pt-1 px-2 text-xs text-amber-500 border-r border-white/5 last:border-r-0">CUBE卡</td>
@@ -460,6 +508,84 @@
             document.getElementById(id + '-icon').classList.toggle('open');
         }
 
+        // Invoice Logic
+        let invoiceDataRaw = [];
+        let invoiceMonths = [];
+        let currentInvoiceMonthIdx = 0;
+
+        function renderInvoiceMonth() {
+            if (invoiceMonths.length === 0) return;
+            const currentMonth = invoiceMonths[currentInvoiceMonthIdx];
+            
+            const y = currentMonth.substring(0, 3);
+            const m = parseInt(currentMonth.substring(3)).toString();
+            document.getElementById('invoice-current-month').innerText = `${y}年${m}月`;
+            
+            let monthData = invoiceDataRaw.filter(i => i.month === currentMonth);
+            // 排序：日期從近到遠 (越大代表越近)
+            monthData.sort((a,b) => parseInt(b.date) - parseInt(a.date));
+            
+            const generateTable = (dataItems) => {
+                if (dataItems.length === 0) return '';
+                let tHtml = `
+                    <div class="overflow-x-auto custom-scrollbar w-full">
+                        <table class="w-full text-left whitespace-nowrap min-w-[400px]">
+                            <thead class="text-xs text-slate-500 uppercase border-b border-white/5">
+                                <tr>
+                                    <th class="px-3 py-2 font-semibold w-16">日期</th>
+                                    <th class="px-3 py-2 font-semibold min-w-[120px]">消費明細</th>
+                                    <th class="px-3 py-2 font-semibold w-32 text-left">商家名稱</th>
+                                    <th class="px-3 py-2 font-semibold text-right w-20">金額</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/5 text-sm">`;
+                dataItems.forEach(item => {
+                    const dStr = String(item.date);
+                    const showDate = dStr.length >= 8 ? `${dStr.substring(4,6)}/${dStr.substring(6,8)}` : dStr;
+                    const amtColor = item.amount < 0 ? 'text-amber-400' : 'text-teal-400';
+                    const sign = item.amount < 0 ? '-' : '';
+                    
+                    tHtml += `
+                    <tr class="hover:bg-white/[0.02] transition border-b border-white/5 last:border-0 group">
+                        <td class="px-3 py-3 text-slate-500 font-mono text-xs">${showDate}</td>
+                        <td class="px-3 py-3 text-slate-100 font-bold"><div class="truncate max-w-[160px] lg:max-w-[200px]" title="${item.detail}">${item.detail}</div></td>
+                        <td class="px-3 py-3 text-slate-500 text-xs"><div class="truncate max-w-[120px] lg:max-w-[160px]" title="${item.store}">${item.store}</div></td>
+                        <td class="px-3 py-3 ${amtColor} font-bold font-mono text-right bg-white/[0.01] group-hover:bg-transparent transition">${sign}$${fmt(Math.abs(item.amount))}</td>
+                    </tr>`;
+                });
+                tHtml += `</tbody></table></div>`;
+                return tHtml;
+            };
+
+            let finalHtml = '';
+            if (monthData.length === 0) {
+                finalHtml = `<div class="text-slate-600 italic px-3 py-4">本月無資料</div>`;
+            } else {
+                const half = Math.ceil(monthData.length / 2);
+                const leftData = monthData.slice(0, half);
+                const rightData = monthData.slice(half);
+                
+                finalHtml = `
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-x-8 gap-y-4 w-full items-start">
+                    ${generateTable(leftData)}
+                    ${generateTable(rightData)}
+                </div>`;
+            }
+            
+            document.getElementById('invoice-details-container').innerHTML = finalHtml;
+        }
+
+        function changeInvoiceMonth(dir) {
+            if (invoiceMonths.length === 0) return;
+            // 由於陣列是降序(最新的在 idx 0)，往回看月份是 dir=1 (往後退一個 idx)
+            // 所以 UI 右箭頭傳入的是 1 (代表看更早的月份) 或 -1 (看較新的月份)
+            // 你也可以依據個人喜好。若左箭是(-1)看早的月，可以調整符號：
+            currentInvoiceMonthIdx -= dir;
+            if (currentInvoiceMonthIdx < 0) currentInvoiceMonthIdx = 0;
+            if (currentInvoiceMonthIdx >= invoiceMonths.length) currentInvoiceMonthIdx = invoiceMonths.length - 1;
+            renderInvoiceMonth();
+        }
+
         const colorBrand = '#00F0FF';
         const colorAccent = '#7000FF';
         const colorUp = '#00E88F';
@@ -479,7 +605,7 @@
                 padding: 16,
                 borderRadius: 12,
                 formatter: p => `
-                    <div class="font-bold text-slate-100 mb-2 text-base tracking-wide">${p.name}</div>
+                    <div class="font-bold text-slate-300 mb-2 text-base tracking-wide">${p.name}</div>
                     <div class="text-cyan-400 font-mono text-xl mb-1 font-bold">NT$ ${fmt(p.value)}</div>
                     <div class="text-xs text-slate-400 font-medium tracking-wider">佔比: ${p.percent}%</div>`
             },
@@ -501,16 +627,16 @@
                     radius: ['45%', '70%'],
                     center: ['50%', '50%'],
                     itemStyle: { borderColor: '#0B0F19', borderWidth: 2, borderRadius: 4 },
-                    label: { color: '#E2E8F0', fontSize: 11, formatter: '{b} {d}%', fontFamily: 'Outfit, Noto Sans TC', fontWeight: 500, overflow: 'break' },
+                    label: { color: '#94A3B8', fontSize: 11, formatter: '{b} {d}%', fontFamily: 'Outfit, Noto Sans TC', fontWeight: 500, overflow: 'break' },
                     labelLine: { lineStyle: { color: 'rgba(255,255,255,0.3)' }, smooth: 0.2, length: 10, length2: 15 },
                     emphasis: { scale: true, scaleSize: 5, itemStyle: { shadowBlur: 20, shadowColor: 'rgba(255, 255, 255, 0.2)' } },
                     data: [
                         { value: 573216, name: '公教定存', itemStyle: { color: '#38bdf8' } },
                         { value: 1051503, name: '富邦活存', itemStyle: { color: '#0ea5e9' } },
-                        { value: 629590, name: '美元保單', itemStyle: { color: '#2dd4bf' } },
-                        { value: 579251, name: '永豐大戶', itemStyle: { color: '#0284c7' } },
-                        { value: 190643, name: '台新(含JPY)', itemStyle: { color: '#3b82f6' } },
-                        { value: 59658,  name: '玉山/郵局', itemStyle: { color: '#6366f1' } },
+                        { value: 629590, name: '美元保單', itemStyle: { color: '#0284c7' } },
+                        { value: 579251, name: '永豐大戶', itemStyle: { color: '#0369a1' } },
+                        { value: 190643, name: '台新(含JPY)', itemStyle: { color: '#2dd4bf' } },
+                        { value: 59658,  name: '玉山/郵局', itemStyle: { color: '#0d9488' } },
                         
                         { value: 1515271, name: '期貨主帳', itemStyle: { color: '#a855f7' } },
                         { value: 500000, name: '韋仔代操', itemStyle: { color: '#d946ef' } },
@@ -539,7 +665,7 @@
                 minAngle: 2,
                 itemStyle: { borderRadius: 8, borderColor: '#0B0F19', borderWidth: 3 },
                 emphasis: { scale: true, scaleSize: 8, itemStyle: { shadowBlur: 15, shadowColor: 'rgba(234, 179, 8, 0.3)' } },
-                label: { color: '#E2E8F0', fontSize: 14, formatter: '{b}  {d}%', fontFamily: 'Outfit, Noto Sans TC', fontWeight: 500 },
+                label: { color: '#94A3B8', fontSize: 14, formatter: '{b}  {d}%', fontFamily: 'Outfit, Noto Sans TC', fontWeight: 500 },
                 labelLine: { lineStyle: { color: 'rgba(255,255,255,0.3)' }, smooth: 0.2, length: 15, length2: 15 },
                 data: [
                     { value: 84508, name: 'Bitfinex', itemStyle: { color: '#f59e0b' } },
@@ -623,11 +749,10 @@
             });
         }
 
-        // --- Dynamic Data Fetching (Google Sheets API Engine) ---
-        const SHEET_ID = '10e0_uS1VNUDgkPsT22xJQjALwrpC1EyW4ZlaaSumujw';
+        const WORKER_URL = 'https://benson-dash.sc70613.workers.dev';
         
         async function fetchSheetData(sheetName) {
-            const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
+            const url = `${WORKER_URL}/?sheet=${encodeURIComponent(sheetName)}&token=benson706`;
             try {
                 const res = await fetch(url);
                 const text = await res.text();
@@ -706,8 +831,8 @@
 
                     // Update allocChart (Double Pie)
                     if (allocData.length > 0 && dict['流動資產'] != null && dict['投資部位'] != null) {
-                        // Assign some nice colors
-                        const colors = ['#38bdf8', '#0ea5e9', '#2dd4bf', '#0284c7', '#3b82f6', '#6366f1', '#a855f7', '#d946ef', '#f43f5e', '#f59e0b'];
+                        // Assign A style gradients: blues for first half (fluid), purples/oranges for second half (invest)
+                        const colors = ['#38bdf8', '#0ea5e9', '#0284c7', '#0369a1', '#2dd4bf', '#0d9488', '#a855f7', '#d946ef', '#f43f5e', '#f59e0b', '#eab308'];
                         allocData.forEach((item, idx) => { item.itemStyle = { color: colors[idx % colors.length] }; });
                         
                         allocChart.setOption({
@@ -748,9 +873,9 @@
 
                             html += `
                             <tr class="table-row-hover bg-white/[0.02]">
-                                <td class="px-5 py-4 text-slate-200 font-medium rounded-l-lg">${item.name}</td>
+                                <td class="px-5 py-4 text-slate-300 font-medium rounded-l-lg">${item.name}</td>
                                 <td class="px-5 py-4 text-muted font-mono text-sm">${fmt(item.invested)}</td>
-                                <td class="px-5 py-4 text-slate-200 font-mono text-sm">${fmt(item.current)}</td>
+                                <td class="px-5 py-4 text-slate-300 font-mono text-sm">${fmt(item.current)}</td>
                                 <td class="px-5 py-4 ${pnlColor} font-bold font-mono text-sm">${sign} ${fmt(Math.abs(item.pnl))}</td>
                                 <td class="px-5 py-4 rounded-r-lg">${badge}</td>
                             </tr>`;
@@ -776,6 +901,74 @@
                         });
                     }
                 }
+
+                // 2. Fetch E-Invoice Sheet
+                const invData = await fetchSheetData('電子發票');
+                if (invData && invData.rows) {
+                    invoiceDataRaw = [];
+                    const sumByMonth = {};
+
+                    invData.rows.forEach(r => {
+                        // Skip text headers or empty lines
+                        if (!r || !r.c || !r.c[1] || r.c[1].v === '發票日期' || !r.c[1].v) return;
+                        
+                        const dateVal = String(r.c[1].v); 
+                        const dateStr = dateVal.replace(/\D/g, ''); // get digits "20260329"
+                        if (dateStr.length < 8) return; 
+
+                        // (YYYY-1911) + MM => 11503
+                        const mYear = parseInt(dateStr.substring(0,4)) - 1911;
+                        const mMonth = dateStr.substring(4,6);
+                        const ROCMonthStr = mYear.toString() + mMonth;
+
+                        let amt = 0;
+                        if (r.c[3] && r.c[3].v != null) {
+                            amt = typeof r.c[3].v === 'number' ? r.c[3].v : parseInt(r.c[3].v.toString().replace(/,/g,'')) || 0;
+                        }
+                        
+                        const stateStr = r.c[4] && r.c[4].v ? String(r.c[4].v) : '';
+                        if(stateStr.includes('作廢')) return; // Ignore cancelled
+
+                        const store = r.c[7] && r.c[7].v ? r.c[7].v : '';
+                        const detail = r.c[13] && r.c[13].v ? r.c[13].v : '';
+
+                        invoiceDataRaw.push({
+                            month: ROCMonthStr,
+                            date: dateStr,
+                            amount: amt,
+                            store: store,
+                            detail: detail
+                        });
+
+                        if (!sumByMonth[ROCMonthStr]) sumByMonth[ROCMonthStr] = 0;
+                        sumByMonth[ROCMonthStr] += amt;
+                    });
+
+                    // Sort descending by month, e.g. 11503, 11502
+                    invoiceMonths = Object.keys(sumByMonth).sort((a,b) => b.localeCompare(a));
+                    currentInvoiceMonthIdx = 0;
+
+                    // Render Stats Fold
+                    let statsHtml = '';
+                    invoiceMonths.forEach(m => {
+                        const y = m.substring(0, 3);
+                        const mo = parseInt(m.substring(3)).toString();
+                        statsHtml += `
+                        <div class="bg-teal-500/10 border border-teal-500/20 rounded-lg px-4 py-2 text-center min-w-[100px]">
+                            <div class="text-xs text-slate-400 mb-1">${y}年${mo}月</div>
+                            <div class="text-teal-400 font-bold font-mono">$${fmt(sumByMonth[m])}</div>
+                        </div>`;
+                    });
+                    
+                    if (statsHtml) {
+                        document.getElementById('invoice-monthly-stats').innerHTML = statsHtml;
+                    } else {
+                        document.getElementById('invoice-monthly-stats').innerHTML = `<div class="text-sm text-slate-500 italic px-2">本月無紀錄</div>`;
+                    }
+
+                    renderInvoiceMonth();
+                }
+
             } catch(e) {
                 console.error("Dashboard synchronization failed: ", e);
             } finally {
